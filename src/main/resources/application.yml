@@ -1,0 +1,17 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url:  jdbc:mysql://localhost:3306/ldj_take_out?useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 123456
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.itheima.entity
+  configuration:
+    map-underscore-to-camel-case: true # ??????
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

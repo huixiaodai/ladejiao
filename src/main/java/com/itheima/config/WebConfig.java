@@ -3,6 +3,7 @@ package com.itheima.config;
 import com.itheima.interceptors.LoginInterceptors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -16,5 +17,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptors).excludePathPatterns("/admin/employee/register","/admin/employee/login");
+    }
+
+    //解决跨域问题
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**") //对所有接口路径都启用跨域规则
+                .allowedOriginPatterns("*") //允许任意来源访问。
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") //允许这些 HTTP 方法跨域请求。
+                .allowedHeaders("*")
+                .allowCredentials(false)
+                .maxAge(3600);
     }
 }

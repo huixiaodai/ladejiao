@@ -1,10 +1,7 @@
 package com.itheima.mapper;
 
 import com.itheima.entity.Employee;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -27,4 +24,15 @@ public interface EmployeeMapper {
     void add(Employee employee);
 
     List<Employee> getlist(String name);
+
+    @Select("select * from employee where id = #{id}")
+    Employee getById(Integer id);
+
+    void update(Employee employee);
+
+    @Select("Select * from employee where id = #{id}")
+    Employee findById(Integer id);
+
+    @Delete("delete from employee where id = #{id}")
+    void deleteById(Integer id);
 }

@@ -1,5 +1,6 @@
 package com.itheima.controller.admin;
 
+import com.itheima.dto.EmployeeDTO;
 import com.itheima.dto.EmployeeFixPwdDTO;
 import com.itheima.dto.EmployeePageQureyDTO;
 import com.itheima.dto.EmployeeRegisterDTO;
@@ -42,7 +43,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/login")
-    public Result<String> login(EmployeeRegisterDTO employeeRegisterDTO) {
+    public Result<String> login(@RequestBody EmployeeRegisterDTO employeeRegisterDTO) {
         Employee e = employeeService.findByUsername(employeeRegisterDTO.getUsername());
         if(e == null){
             return Result.error("该用户不存在");
@@ -80,7 +81,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/add")
-    public Result add(@Validated @RequestBody com.sky.dto.EmployeeDTO employeeDTO) {
+    public Result add(@Validated @RequestBody EmployeeDTO employeeDTO) {
         employeeService.add(employeeDTO);
         return Result.success();
     }
@@ -89,5 +90,29 @@ public class EmployeeController {
     public Result<PageResult<Employee>> getlist(EmployeePageQureyDTO employeePageQureyDTO){
 
         return Result.success(employeeService.getlist(employeePageQureyDTO));
+    }
+
+    @GetMapping("/{id}")
+    public Result<Employee> getById(@PathVariable("id") Integer id){
+        return Result.success(employeeService.getById(id));
+    }
+
+    @PutMapping("/update")
+    public Result update(@Validated(EmployeeDTO.Update.class) @RequestBody EmployeeDTO employeeDTO){
+        employeeService.update(employeeDTO);
+        return Result.success();
+    }
+
+    //启用、禁用员工
+    @PutMapping("/status/{id}")
+    public Result updateStatus(@PathVariable("id") Integer id){
+        employeeService.updateStatus(id);
+        return Result.success();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@PathVariable("id") Integer id){
+        employeeService.deleteById(id);
+        return Result.success();
     }
 }

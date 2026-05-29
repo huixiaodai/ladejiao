@@ -9,7 +9,7 @@ import com.itheima.mapper.EmployeeMapper;
 import com.itheima.result.PageResult;
 import com.itheima.service.EmployeeService;
 import com.itheima.utils.ThreadLocalUtil;
-import com.sky.dto.EmployeeDTO;
+import com.itheima.dto.EmployeeDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,5 +91,49 @@ public class EmployeeServiceImpl implements EmployeeService {
         pageResult.setRecords(page.getResult());
 
         return pageResult;
+    }
+
+    @Override
+    public Employee getById(Integer id) {
+        return employeeMapper.getById(id);
+    }
+
+    @Override
+    public void update(EmployeeDTO employeeDTO) {
+        //1.new Employee
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        Map<String,Object> map = ThreadLocalUtil.get();
+        Integer id = (Integer) map.get("id");
+        employee.setUpdateUser(id);
+
+        employee.setUpdateTime(LocalDateTime.now());
+
+        employeeMapper.update(employee);
+    }
+
+    @Override
+    public void updateStatus(Integer id) {
+        Employee e = employeeMapper.findById(id);
+
+        if (e == null) {
+            throw new RuntimeException("员工不存在");
+        }
+
+        Integer status = e.getStatus();
+        if (status == 1) {
+            e.setStatus(0);
+        }
+        else{
+            e.setStatus(1);
+        }
+        //e.setStatus(e.getStatus() == 1 ? 0 : 1);
+        employeeMapper.update(e);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        employeeMapper.deleteById(id);
     }
 }

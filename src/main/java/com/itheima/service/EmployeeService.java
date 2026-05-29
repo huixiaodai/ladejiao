@@ -1,5 +1,6 @@
 package com.itheima.service;
 
+import com.itheima.dto.EmployeeDTO;
 import com.itheima.dto.EmployeePageQureyDTO;
 import com.itheima.dto.EmployeeRegisterDTO;
 import com.itheima.entity.Employee;
@@ -13,8 +14,17 @@ public interface EmployeeService {
     void fixpwd(String username,String password);
 
 
-    void add(com.sky.dto.EmployeeDTO employeeDTO);
+    void add(EmployeeDTO employeeDTO);
 
 
     PageResult<Employee> getlist(EmployeePageQureyDTO employeePageQureyDTO);
+
+    Employee getById(Integer id);
+
+
+    void update(EmployeeDTO employeeDTO);
+
+    void updateStatus(Integer id);
+
+    void deleteById(Integer id);
 }

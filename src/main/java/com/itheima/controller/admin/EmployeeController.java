@@ -1,8 +1,10 @@
 package com.itheima.controller.admin;
 
 import com.itheima.dto.EmployeeFixPwdDTO;
+import com.itheima.dto.EmployeePageQureyDTO;
 import com.itheima.dto.EmployeeRegisterDTO;
 import com.itheima.entity.Employee;
+import com.itheima.result.PageResult;
 import com.itheima.result.Result;
 import com.itheima.service.EmployeeService;
 import com.itheima.utils.JwtUtils;
@@ -12,6 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -74,5 +77,17 @@ public class EmployeeController {
         employeeService.fixpwd(username,employeeFixPwdDTO.getNewPwd());
         return Result.success();
 
+    }
+
+    @PostMapping("/add")
+    public Result add(@Validated @RequestBody com.sky.dto.EmployeeDTO employeeDTO) {
+        employeeService.add(employeeDTO);
+        return Result.success();
+    }
+
+    @GetMapping("/page")
+    public Result<PageResult<Employee>> getlist(EmployeePageQureyDTO employeePageQureyDTO){
+
+        return Result.success(employeeService.getlist(employeePageQureyDTO));
     }
 }

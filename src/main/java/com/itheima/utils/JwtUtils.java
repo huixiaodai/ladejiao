@@ -33,6 +33,7 @@ public class JwtUtils {
         Map<String,Object> map = new HashMap<>();
         map.put("id",decodedJWT.getClaim("id").asInt());
         map.put("username",decodedJWT.getClaim("username").asString());
+        map.put("updateTime",decodedJWT.getClaim("updateTime").asString());
 
         return map;
     }

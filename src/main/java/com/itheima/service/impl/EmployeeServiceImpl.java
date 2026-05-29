@@ -1,12 +1,22 @@
 package com.itheima.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.itheima.dto.EmployeePageQureyDTO;
 import com.itheima.dto.EmployeeRegisterDTO;
 import com.itheima.entity.Employee;
 import com.itheima.mapper.EmployeeMapper;
+import com.itheima.result.PageResult;
 import com.itheima.service.EmployeeService;
+import com.itheima.utils.ThreadLocalUtil;
+import com.sky.dto.EmployeeDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -38,5 +48,48 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public void fixpwd(String username,String password) {
         employeeMapper.fixpwd(username,password);
+    }
+
+    @Override
+    public void add(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+
+        //设置默认密码
+        employee.setPassword("123456");
+        employee.setStatus(1);
+        employee.setCreateTime(LocalDateTime.now());
+        employee.setUpdateTime(LocalDateTime.now());
+
+        //设置当前记录创建人id和修改人id
+        Map<String,Object> map = ThreadLocalUtil.get();
+        Integer id = (Integer) map.get("id");
+
+        employee.setCreateUser(id);
+        employee.setUpdateUser(id);
+
+        employeeMapper.add(employee);
+    }
+
+    @Override
+    public PageResult<Employee> getlist(EmployeePageQureyDTO employeePageQureyDTO) {
+
+        //1.开启pageHelper
+        PageHelper.startPage(employeePageQureyDTO.getPage(),employeePageQureyDTO.getPageSize());
+
+        //2.查询数据
+        List<Employee> list = employeeMapper.getlist(employeePageQureyDTO.getName());
+
+        //3.将list转为page
+        Page<Employee> page = (Page<Employee>) list;
+
+        //4.新建一个pageResult
+        PageResult<Employee> pageResult = new PageResult<>();
+
+        //5.将page里面的total和Records放进去
+        pageResult.setTotal(page.getTotal());
+        pageResult.setRecords(page.getResult());
+
+        return pageResult;
     }
 }

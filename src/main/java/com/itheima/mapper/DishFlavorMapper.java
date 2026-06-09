@@ -2,10 +2,8 @@ package com.itheima.mapper;
 
 import com.itheima.entity.Dish;
 import com.itheima.entity.DishFlavor;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Options;
-import org.apache.ibatis.annotations.Select;
+import jakarta.validation.constraints.NotNull;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -16,4 +14,9 @@ public interface DishFlavorMapper {
 
     @Select("select * from dish_flavor where dish_id = #{id}")
     List<DishFlavor> getByDishId(Integer id);
+
+    @Delete("delete from dish_flavor where dish_id = #{id}")
+    void deleteByDishId(@NotNull(groups = Update.class) Integer id);
+
+    void deleteBatchByIds(List<Integer> ids);
 }

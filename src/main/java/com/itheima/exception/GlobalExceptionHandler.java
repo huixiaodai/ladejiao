@@ -23,4 +23,9 @@ public class GlobalExceptionHandler {
     public Result handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return Result.error("请求体格式错误");
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public Result handleBusinessException(BusinessException e){
+        return Result.error(e.getMessage());
+    }
 }

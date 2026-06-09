@@ -18,6 +18,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/dish")
 @Slf4j
@@ -49,5 +51,28 @@ public class DishController {
     @GetMapping("/page")
     public Result<PageResult<DishVO>> getDishList(DishQueryDTO dishQueryDTO){
         return Result.success(dishService.getDishList(dishQueryDTO));
+    }
+
+    @PutMapping("/status/{targetStatus}")
+    public Result updateDishStatus(@PathVariable("targetStatus") Integer id){
+        dishService.updateDishStatus(id);
+        return Result.success();
+    }
+
+    @GetMapping("/{id}")
+    public Result<DishVO> getDish(@PathVariable("id") Integer id){
+        return Result.success(dishService.getdish(id));
+    }
+
+    @PutMapping
+    public Result updateDish(@RequestBody @Validated DishDTO dishDTO){
+        dishService.updateDish(dishDTO);
+        return Result.success();
+    }
+
+    @DeleteMapping
+    public Result deleteBatchDish(@RequestParam List<Integer> ids){
+        dishService.deleteBatchDish(ids);
+        return Result.success();
     }
 }

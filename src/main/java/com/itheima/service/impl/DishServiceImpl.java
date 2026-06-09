@@ -8,6 +8,7 @@ import com.itheima.dto.DishFlavorDTO;
 import com.itheima.dto.DishQueryDTO;
 import com.itheima.entity.Dish;
 import com.itheima.entity.DishFlavor;
+import com.itheima.exception.BusinessException;
 import com.itheima.mapper.CategoryMapper;
 import com.itheima.mapper.DishFlavorMapper;
 import com.itheima.mapper.DishMapper;
@@ -43,11 +44,7 @@ public class DishServiceImpl implements DishService {
 
 
         dish.setStatus(1);
-        dish.setCreateTime(LocalDateTime.now());
-        dish.setUpdateTime(LocalDateTime.now());
-        Integer currentId = ThreadLocalUtil.getCurrentId();
-        dish.setCreateUser(currentId);
-        dish.setUpdateUser(currentId);
+
 
         //2.把这条菜品新增好，然后获得dishId,然后再去口味表插入数据
         dishMapper.addDish(dish);
@@ -86,6 +83,77 @@ public class DishServiceImpl implements DishService {
 
 
         return new PageResult<>(page.getTotal(),page.getResult());
+
+    }
+
+    @Override
+    public void updateDishStatus(Integer id) {
+        Dish dish = dishMapper.getDishById(id);
+        if (dish == null) {
+            return;
+        }
+        Integer status = dish.getStatus();
+        status = status == 1 ? 0 : 1;
+        dish.setStatus(status);
+        dishMapper.update(dish);
+    }
+
+    @Override
+    public DishVO getdish(Integer id) {
+        //根据id查询菜品信息
+        Dish dish = dishMapper.getDishById(id);
+
+        //根据id查询口味信息
+        List<DishFlavor> flavors = dishFlavorMapper.getByDishId(id);
+
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(flavors);
+
+        return dishVO;
+    }
+
+    @Override
+    @Transactional
+    public void updateDish(DishDTO dishDTO) {
+        Dish dish = dishMapper.getDishById(dishDTO.getId());
+
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
+
+        //先对菜品口味进行批量删除
+        dishFlavorMapper.deleteByDishId(dishDTO.getId());
+
+        //重新插入口味数据
+        List<DishFlavorDTO> flavors = dishDTO.getFlavors();
+        if (flavors != null && !flavors.isEmpty()) {
+            List<DishFlavor> flavorList = new ArrayList<>();
+            for (DishFlavorDTO flavorDTO : flavors) {
+                DishFlavor flavor = new DishFlavor();
+                flavor.setDishId(dish.getId());
+                flavor.setName(flavorDTO.getName());
+                flavor.setValue(JSON.toJSONString(flavorDTO.getValue()));
+                flavorList.add(flavor);
+            }
+            dishFlavorMapper.addBatchFlavor(flavorList);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBatchDish(List<Integer> ids) {
+        // 起售中的菜品不可以删除
+        for (Integer id : ids) {
+            Dish dish = dishMapper.getDishById(id);
+            if (dish.getStatus() == 1){
+                throw new BusinessException("起售中的菜品不可以删除");
+            }
+        }
+        // TODO 和套餐关联的商品不可以删除
+
+        // 删除菜品
+        dishFlavorMapper.deleteBatchByIds(ids);
+        dishMapper.deleteBatchByIds(ids);
 
     }
 }

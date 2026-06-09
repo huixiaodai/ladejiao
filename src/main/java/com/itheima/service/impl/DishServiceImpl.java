@@ -8,10 +8,12 @@ import com.itheima.dto.DishFlavorDTO;
 import com.itheima.dto.DishQueryDTO;
 import com.itheima.entity.Dish;
 import com.itheima.entity.DishFlavor;
+import com.itheima.entity.SetmealDish;
 import com.itheima.exception.BusinessException;
 import com.itheima.mapper.CategoryMapper;
 import com.itheima.mapper.DishFlavorMapper;
 import com.itheima.mapper.DishMapper;
+import com.itheima.mapper.SetmealDishMapper;
 import com.itheima.result.PageResult;
 import com.itheima.service.DishService;
 import com.itheima.utils.ThreadLocalUtil;
@@ -34,6 +36,8 @@ public class DishServiceImpl implements DishService {
     private CategoryMapper categoryMapper;
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     @Override
     @Transactional
@@ -149,7 +153,14 @@ public class DishServiceImpl implements DishService {
                 throw new BusinessException("起售中的菜品不可以删除");
             }
         }
-        // TODO 和套餐关联的商品不可以删除
+        // 和套餐关联的商品不可以删除
+        for (Integer id : ids) {
+            SetmealDish dish =  setmealDishMapper.getSetmealDishByDishId(id);
+            if (dish != null){
+                throw new BusinessException("和套餐关联的菜品不可以删除");
+            }
+        }
+
 
         // 删除菜品
         dishFlavorMapper.deleteBatchByIds(ids);

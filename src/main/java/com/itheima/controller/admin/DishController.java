@@ -65,7 +65,7 @@ public class DishController {
     }
 
     @PutMapping
-    public Result updateDish(@RequestBody @Validated DishDTO dishDTO){
+    public Result updateDish(@RequestBody @Validated(DishDTO.Update.class) DishDTO dishDTO){
         dishService.updateDish(dishDTO);
         return Result.success();
     }

@@ -28,4 +28,11 @@ public class GlobalExceptionHandler {
     public Result handleBusinessException(BusinessException e){
         return Result.error(e.getMessage());
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result handleException(Exception e){
+        e.printStackTrace(); // 先用这个，最直观
+        return Result.error("系统异常：" + e.getMessage());
+    }
 }

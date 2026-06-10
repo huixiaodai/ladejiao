@@ -46,9 +46,7 @@ public class DishServiceImpl implements DishService {
         Dish dish = new Dish();
         BeanUtils.copyProperties(dishDTO, dish);
 
-
         dish.setStatus(1);
-
 
         //2.把这条菜品新增好，然后获得dishId,然后再去口味表插入数据
         dishMapper.addDish(dish);
